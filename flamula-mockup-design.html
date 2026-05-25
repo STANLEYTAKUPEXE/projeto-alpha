@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flâmula Mockup - Transição Segura</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 40px;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Wrapper geral ── */
+    .wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 420px;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.22)) drop-shadow(0 8px 20px rgba(0,0,0,0.12));
+    }
+
+    /* ══════════════════════════════
+       HASTE (rod) realista
+    ══════════════════════════════ */
+    .rod-wrap {
+      position: relative;
+      width: calc(100% + 40px);
+      height: 22px;
+      z-index: 10;
+    }
+
+    .rod-bar {
+      position: absolute;
+      top: 50%; left: 20px; right: 20px;
+      transform: translateY(-50%);
+      height: 14px;
+      border-radius: 7px;
+      background: linear-gradient(
+        180deg,
+        #f9e89a 0%,
+        #d4a93a 20%,
+        #f0cc60 40%,
+        #c89030 60%,
+        #e8c050 75%,
+        #a87020 100%
+      );
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.3),
+        inset 0 1px 2px rgba(255,255,255,0.5);
+    }
+
+    .rod-knob {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%,
+        #f9e89a 0%, #d4a93a 35%, #a07020 70%, #7a5010 100%
+      );
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.45),
+        inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+    .rod-knob.left  { left: 0; }
+    .rod-knob.right { right: 0; }
+
+    /* ══════════════════════════════
+       FLÂMULA — forma + tecido
+    ══════════════════════════════ */
+    .pennant {
+      position: relative;
+      width: 100%;
+      /* clip-path cria o formato com ponta embaixo */
+      clip-path: polygon(
+        0% 0%,
+        100% 0%,
+        100% 78%,
+        50% 100%,
+        0% 78%
+      );
+    }
+
+    /* Tecido: múltiplos gradientes simulando dobras */
+    .fabric {
+      position: relative;
+      width: 100%;
+      padding-bottom: 130%; /* proporção altura/largura */
+      background:
+        /* dobra diagonal esquerda */
+        linear-gradient(
+          142deg,
+          rgba(255,255,255,0) 0%,
+          rgba(210,210,210,0.35) 25%,
+          rgba(255,255,255,0) 40%
+        ),
+        /* sombra lateral direita */
+        linear-gradient(
+          270deg,
+          rgba(180,180,180,0.25) 0%,
+          rgba(255,255,255,0) 30%
+        ),
+        /* dobra central vertical */
+        radial-gradient(
+          ellipse 30% 80% at 42% 55%,
+          rgba(220,220,220,0.3) 0%,
+          rgba(255,255,255,0) 100%
+        ),
+        /* reflexo diagonal leve */
+        linear-gradient(
+          200deg,
+          rgba(255,255,255,0.9) 0%,
+          rgba(240,240,240,0.6) 20%,
+          rgba(248,248,248,0.4) 50%,
+          rgba(225,225,225,0.5) 75%,
+          rgba(245,245,245,0.3) 100%
+        ),
+        /* base branca */
+        #f8f8f8;
+    }
+
+    /* borda cinza fina (borda do tecido) */
+    .fabric::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      box-shadow: inset 0 0 0 1.5px rgba(190,190,190,0.6);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* reflexo de luz no canto superior esquerdo */
+    .fabric::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 55%; height: 45%;
+      background: radial-gradient(
+        ellipse at 20% 15%,
+        rgba(255,255,255,0.7) 0%,
+        rgba(255,255,255,0) 70%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ══════════════════════════════
+       CONTEÚDO sobre o tecido
+    ══════════════════════════════ */
+    .content {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 38px 32px 160px;
+      z-index: 4;
+    }
+
+    .sun-svg   { width: 78px; height: 78px; margin-bottom: 12px; flex-shrink: 0; }
+
+    .brand-name {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      margin-bottom: 13px;
+    }
+
+    .divider {
+      display: flex; align-items: center; gap: 9px;
+      width: 100%; justify-content: center;
+      margin-bottom: 13px;
+    }
+    .divider-line { flex:1; height:2px; background:#8b0000; max-width:72px; }
+    .shield-svg   { width:28px; height:28px; flex-shrink:0; }
+
+    .headline {
+      font-size: 16px; font-weight: 800;
+      color: #1a1a1a; line-height: 1.4;
+      margin-bottom: 13px;
+    }
+
+    .subtext {
+      font-size: 12px; font-weight: 700;
+      color: #1a1a1a; line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .checklist { list-style:none; padding:0; margin:0; width:100%; text-align:left; }
+    .checklist li {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 12px; font-weight: 700;
+      color: #1a1a1a; margin-bottom: 9px;
+    }
+    .check-svg { flex-shrink:0; width:20px; height:20px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Haste -->
+  <div class="rod-wrap">
+    <div class="rod-bar"></div>
+    <div class="rod-knob left"></div>
+    <div class="rod-knob right"></div>
+  </div>
+
+  <!-- Flâmula com tecido -->
+  <div class="pennant">
+    <div class="fabric">
+      <div class="content">
+
+        <!-- Sol -->
+        <svg class="sun-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#8b0000">
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(0   50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(30  50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(60  50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(90  50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(120 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(150 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(180 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(210 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(240 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(270 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(300 50 50)"/>
+            <polygon points="47,14 50,7 53,14 50,26" transform="rotate(330 50 50)"/>
+          </g>
+          <circle cx="50" cy="50" r="17" fill="white"/>
+        </svg>
+
+        <p class="brand-name">Transição Segura</p>
+
+        <div class="divider">
+          <div class="divider-line"></div>
+          <svg class="shield-svg" viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2 L37 9 L37 24 C37 33 29 40 20 44 C11 40 3 33 3 24 L3 9 Z"
+                  stroke="#8b0000" stroke-width="2.8" fill="rgba(255,255,255,0.7)"/>
+            <polyline points="12,23 18,29 28,17" stroke="#8b0000" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <div class="divider-line"></div>
+        </div>
+
+        <p class="headline">Troque de contabilidade<br>sem preocupações</p>
+
+        <p class="subtext">
+          Assumimos todo o processo de migração<br>
+          para que você não precise<br>
+          se preocupar com burocracia,<br>
+          documentos ou riscos operacionais.
+        </p>
+
+        <ul class="checklist">
+          <li>
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="11" stroke="#8b0000" stroke-width="2" fill="rgba(255,255,255,0.6)"/>
+              <polyline points="6,12 10,16 18,8" stroke="#8b0000" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Comunicação com seu contador atual
+          </li>
+          <li>
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="11" stroke="#8b0000" stroke-width="2" fill="rgba(255,255,255,0.6)"/>
+              <polyline points="6,12 10,16 18,8" stroke="#8b0000" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Solicitação e conferência dos documentos
+          </li>
+          <li>
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="11" stroke="#8b0000" stroke-width="2" fill="rgba(255,255,255,0.6)"/>
+              <polyline points="6,12 10,16 18,8" stroke="#8b0000" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Organização da migração fiscal e contábil
+          </li>
+          <li>
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="11" stroke="#8b0000" stroke-width="2" fill="rgba(255,255,255,0.6)"/>
+              <polyline points="6,12 10,16 18,8" stroke="#8b0000" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Acompanhamento completo da transição
+          </li>
+          <li>
+            <svg class="check-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="11" stroke="#8b0000" stroke-width="2" fill="rgba(255,255,255,0.6)"/>
+              <polyline points="6,12 10,16 18,8" stroke="#8b0000" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Continuidade da operação sem interrupções
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
